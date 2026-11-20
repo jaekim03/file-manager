@@ -1,0 +1,8 @@
+[project]
+name = "file-manager"
+version = "0.1.0"
+description = "Sorts loose files into a numbered NN_Category folder tree, using an AI model of your choice."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+dependencies = []

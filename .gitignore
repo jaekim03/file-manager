@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+dist/
+build/
+
+# macOS
+.DS_Store
+
+# Secrets
+.env
+
+# User data: lives in ~/.config/file-manager/, never in the repo
+config.json
+rules.md
+log/
+manifest.json
+plan.json
+
+# Test output
+tests/fixtures/
