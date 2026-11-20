@@ -12,7 +12,7 @@ requires-python = ">=3.9"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest", "ruff"]
 
 [project.scripts]
 organize = "file_manager.cli:main"

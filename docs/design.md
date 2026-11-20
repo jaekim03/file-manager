@@ -32,17 +32,22 @@ flowchart LR
     A --> L[(log)] --> U[undo]
 ```
 
-| Part | Job |
-|---|---|
-| Core (Python, no AI) | Scan, safety checks, move, Trash, log, undo |
-| Claude Code plugin | `/file-manager:organize [path]`. Uses the Claude plan; no API key. |
-| Standalone command | `organize [path]`. Uses the user's own API key or a local model. |
+| Part                 | Job                                                                |
+| -------------------- | ------------------------------------------------------------------ |
+| Core (Python, no AI) | Scan, safety checks, move, Trash, log, undo                        |
+| Claude Code plugin   | `/file-manager:organize [path]`. Uses the Claude plan; no API key. |
+| Standalone command   | `organize [path]`. Uses the user's own API key or a local model.   |
 
 Both front ends share one prompt, and the model must return this for each file:
 
 ```json
-{"file": "Scan 12.pdf", "dest": "00_Personal/01_Financial",
- "new_name": "2026-10-31_bank_statement.pdf", "confidence": "high", "reason": "..."}
+{
+  "file": "Scan 12.pdf",
+  "dest": "00_Personal/01_Financial",
+  "new_name": "2026-10-31_bank_statement.pdf",
+  "confidence": "high",
+  "reason": "..."
+}
 ```
 
 Options for both: `--dry-run` (show the plan, change nothing) and `--undo` (reverse the last run).
@@ -59,15 +64,15 @@ Options for both: `--dry-run` (show the plan, change nothing) and `--undo` (reve
 
 Kept in `~/.config/file-manager/` with `rules.md` and the logs, outside the repo.
 
-| Setting | Default |
-|---|---|
-| `destination_root` | asked on first run |
-| `default_source` | the current folder |
-| `rename` | on |
-| `auto_move` | on (off = ask about every file) |
-| `trash_patterns` | `*.dmg`, `*.pkg` |
-| `never_read` | none (files classified by name only) |
-| `provider`, `model`, `base_url`, `api_key_env` | standalone only |
+| Setting                                        | Default                              |
+| ---------------------------------------------- | ------------------------------------ |
+| `destination_root`                             | asked on first run                   |
+| `default_source`                               | the current folder                   |
+| `rename`                                       | on                                   |
+| `auto_move`                                    | on (off = ask about every file)      |
+| `trash_patterns`                               | `*.dmg`, `*.pkg`                     |
+| `never_read`                                   | none (files classified by name only) |
+| `provider`, `model`, `base_url`, `api_key_env` | standalone only                      |
 
 ## 5. Safety and privacy
 
@@ -85,10 +90,10 @@ Kept in `~/.config/file-manager/` with `rules.md` and the logs, outside the repo
 
 ## 7. Decision log
 
-| Date | Change |
-|---|---|
-| 2026-11-19 | First design: Claude Code skill plus classifier subagent |
+| Date       | Change                                                                                         |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| 2026-11-19 | First design: Claude Code skill plus classifier subagent                                       |
 | 2026-11-19 | Made public-ready: settings file, user data outside the repo, moves done by checked code, undo |
-| 2026-11-19 | Made model-independent: shared core, Claude plugin and standalone command |
-| 2026-11-19 | Doc cut down to essentials |
-| 2026-11-20 | Command is `organize [path]`; with no path it sorts the current folder |
+| 2026-11-19 | Made model-independent: shared core, Claude plugin and standalone command                      |
+| 2026-11-19 | Doc cut down to essentials                                                                     |
+| 2026-11-20 | Command is `organize [path]`; with no path it sorts the current folder                         |

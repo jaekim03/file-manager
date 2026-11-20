@@ -6,17 +6,17 @@ How the repo is set up, what to build next, and how to write tests. For what the
 
 Slice 1 (scaffold) is done. The package installs, `organize` runs, and the tests pass. Nothing is sorted yet: `organize` only prints the folder it would sort.
 
-| File | Contents |
-|---|---|
-| `README.md` | Planned use, safety, privacy |
-| `docs/design.md` | v0 design |
-| `docs/development.md` | This file |
-| `pyproject.toml` | Name `file-manager` 0.1.0, Python >= 3.9, no runtime dependencies. setuptools build, `dev` extra with `pytest`, `organize` command, pytest reads `tests/`. |
-| `src/file_manager/__init__.py` | Package version |
-| `src/file_manager/cli.py` | `organize [path]`: targets the given path, or the current folder if none, and prints `Would organize: <folder>` |
-| `tests/test_cli.py` | `test_no_argument_targets_current_folder`, `test_argument_targets_given_folder` |
-| `.gitignore` | Python and macOS ignores (includes `.venv/`) |
-| `LICENSE` | MIT |
+| File                           | Contents                                                                                                                                                   |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `README.md`                    | Planned use, safety, privacy                                                                                                                               |
+| `docs/design.md`               | v0 design                                                                                                                                                  |
+| `docs/development.md`          | This file                                                                                                                                                  |
+| `pyproject.toml`               | Name `file-manager` 0.1.0, Python >= 3.9, no runtime dependencies. setuptools build, `dev` extra with `pytest`, `organize` command, pytest reads `tests/`. |
+| `src/file_manager/__init__.py` | Package version                                                                                                                                            |
+| `src/file_manager/cli.py`      | `organize [path]`: targets the given path, or the current folder if none, and prints `Would organize: <folder>`                                            |
+| `tests/test_cli.py`            | `test_no_argument_targets_current_folder`, `test_argument_targets_given_folder`                                                                            |
+| `.gitignore`                   | Python and macOS ignores (includes `.venv/`)                                                                                                               |
+| `LICENSE`                      | MIT                                                                                                                                                        |
 
 **Not set up yet:** the safety checks, moving files, Trash, logging, undo, models, settings, CI and the Claude Code plugin manifest.
 
@@ -34,6 +34,7 @@ organize                              # Would organize: <current folder>
 ## What we did
 
 **2026-11-20**
+
 - Added this doc.
 - Command changed to `organize [path]`, which defaults to the current folder.
 - Scaffold: package, `organize` stub, 2 CLI tests (passing). pip needed an upgrade to install.
