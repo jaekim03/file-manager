@@ -4,7 +4,7 @@ How the repo is set up, what to build next, and how to write tests. For what the
 
 ## Current state
 
-Slices 1–3 (scaffold, plan model, safety checks) are done. The package installs, `organize` runs, and the tests pass. Nothing is sorted yet: `organize` only prints the folder it would sort, and the plan model and safety checks are not wired into the CLI.
+Slices 1–4 (scaffold, plan model, safety checks, executor) are done. The package installs, `organize` runs, and the tests pass. Nothing is sorted yet: `organize` only prints the folder it would sort, and the core modules are not wired into the CLI.
 
 | File                           | Contents                                                                                                                                                   |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -16,13 +16,15 @@ Slices 1–3 (scaffold, plan model, safety checks) are done. The package install
 | `src/file_manager/cli.py`      | `organize [path]`: targets the given path, or the current folder if none, and prints `Would organize: <folder>`                                            |
 | `src/file_manager/plan.py`     | `Action` dataclass (`file`, `dest`, `new_name`, `confidence`, `reason`; `is_sure` when confidence is `high`). `parse_plan(text)` returns a list of actions or raises `PlanError` on bad JSON, a non-list, missing or non-string fields, empty path fields, or an unknown confidence. |
 | `src/file_manager/safety.py`   | `check_plan(actions, source, dest_root)` raises `UnsafePlanError` naming the first bad action. Checks: source is a plain name directly in the source folder, appears once, exists and is a file; resolved destination stays inside the root (symlinks included); `new_name` is a plain, visible filename. `is_protected(path)`: hidden files, `.crdownload`/`.part`/`.download`, symlinks. |
+| `src/file_manager/executor.py` | `execute(actions, source, dest_root, *, log_dir, trash_patterns, trash_dir)` runs `check_plan` first, then moves each file to `dest_root/dest/new_name` or sends `trash_patterns` matches (default `*.dmg`, `*.pkg`, case-insensitive) to `~/.Trash`. Never overwrites: a different file with the same name gets `_2`, `_3`, …; an identical file leaves the source in place. Writes a JSON log (`move`/`trash`/`skip_identical` entries plus `created_dirs`) to `log_dir/<UTC timestamp>.json` and returns it as a `RunLog`. Also `move_file`, `trash_file`, `matches_trash`. |
 | `tests/test_cli.py`            | `test_no_argument_targets_current_folder`, `test_argument_targets_given_folder`                                                                            |
 | `tests/test_plan.py`           | Parsing valid plans and rejecting each kind of malformed output                                                                                            |
 | `tests/test_safety.py`         | Each safety rule, and that one bad action rejects the whole plan                                                                                           |
+| `tests/test_executor.py`      | No overwrites, `_2`/`_3` naming, identical-file skip, Trash, unsafe plan moves nothing, log contents                                                       |
 | `.gitignore`                   | Python and macOS ignores (includes `.venv/`)                                                                                                               |
 | `LICENSE`                      | MIT                                                                                                                                                        |
 
-**Not set up yet:** moving files, Trash, logging, undo, models, settings, CI and the Claude Code plugin manifest.
+**Not set up yet:** undo, models, settings, CI and the Claude Code plugin manifest.
 
 ### Setup
 
@@ -31,7 +33,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip   # macOS Python 3.9's bundled pip is too old for editable installs
 pip install -e ".[dev]"
-pytest                                # 55 passed
+pytest                                # 76 passed
 organize                              # Would organize: <current folder>
 ```
 
@@ -39,6 +41,7 @@ organize                              # Would organize: <current folder>
 
 **2026-11-20**
 
+- Slice 4: executor in `executor.py`. Trash is a plain move into `~/.Trash` (no Finder "Put Back"; undo covers it). `log_dir` is a required argument until settings land in Slice 7.
 - Slice 3: safety checks in `safety.py`. Beyond design §3/§5, also rejects a file listed twice, a `new_name` that is a path or hidden, and sources that aren't directly in the source folder.
 - Slice 2: plan model and parser in `plan.py`.
 - Added this doc.
@@ -56,7 +59,7 @@ Build in thin slices. Each slice ends with code that runs, has passing tests and
    - every destination is inside the destination root
    - hidden files, partial downloads and symlinks are skipped
    - one bad action rejects the whole plan
-4. **Executor.** Move files without ever overwriting: add `_2` when a different file has the same name, and leave the source in place when an identical file is already there. Send `trash_patterns` matches to the Trash and write a JSON log of the run.
+4. ~~**Executor.** Move files without ever overwriting: add `_2` when a different file has the same name, and leave the source in place when an identical file is already there. Send `trash_patterns` matches to the Trash and write a JSON log of the run.~~ Done.
 5. **Undo.** Reverse the last run from its log.
 6. **Scanner and test fixtures.** List the files in the source folder. Add the fake model and the script that builds a fake folder to sort (design §6).
 7. **Standalone CLI.** `organize [path]` with `--dry-run` and `--undo`, plus settings in `~/.config/file-manager/`.
