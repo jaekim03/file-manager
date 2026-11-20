@@ -21,3 +21,6 @@ plan.json
 
 # Test output
 tests/fixtures/
+
+.claude/worktrees/
+
