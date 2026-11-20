@@ -4,7 +4,7 @@ How the repo is set up, what to build next, and how to write tests. For what the
 
 ## Current state
 
-Slice 1 (scaffold) is done. The package installs, `organize` runs, and the tests pass. Nothing is sorted yet: `organize` only prints the folder it would sort.
+Slices 1–3 (scaffold, plan model, safety checks) are done. The package installs, `organize` runs, and the tests pass. Nothing is sorted yet: `organize` only prints the folder it would sort, and the plan model and safety checks are not wired into the CLI.
 
 | File                           | Contents                                                                                                                                                   |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -14,11 +14,15 @@ Slice 1 (scaffold) is done. The package installs, `organize` runs, and the tests
 | `pyproject.toml`               | Name `file-manager` 0.1.0, Python >= 3.9, no runtime dependencies. setuptools build, `dev` extra with `pytest`, `organize` command, pytest reads `tests/`. |
 | `src/file_manager/__init__.py` | Package version                                                                                                                                            |
 | `src/file_manager/cli.py`      | `organize [path]`: targets the given path, or the current folder if none, and prints `Would organize: <folder>`                                            |
+| `src/file_manager/plan.py`     | `Action` dataclass (`file`, `dest`, `new_name`, `confidence`, `reason`; `is_sure` when confidence is `high`). `parse_plan(text)` returns a list of actions or raises `PlanError` on bad JSON, a non-list, missing or non-string fields, empty path fields, or an unknown confidence. |
+| `src/file_manager/safety.py`   | `check_plan(actions, source, dest_root)` raises `UnsafePlanError` naming the first bad action. Checks: source is a plain name directly in the source folder, appears once, exists and is a file; resolved destination stays inside the root (symlinks included); `new_name` is a plain, visible filename. `is_protected(path)`: hidden files, `.crdownload`/`.part`/`.download`, symlinks. |
 | `tests/test_cli.py`            | `test_no_argument_targets_current_folder`, `test_argument_targets_given_folder`                                                                            |
+| `tests/test_plan.py`           | Parsing valid plans and rejecting each kind of malformed output                                                                                            |
+| `tests/test_safety.py`         | Each safety rule, and that one bad action rejects the whole plan                                                                                           |
 | `.gitignore`                   | Python and macOS ignores (includes `.venv/`)                                                                                                               |
 | `LICENSE`                      | MIT                                                                                                                                                        |
 
-**Not set up yet:** the safety checks, moving files, Trash, logging, undo, models, settings, CI and the Claude Code plugin manifest.
+**Not set up yet:** moving files, Trash, logging, undo, models, settings, CI and the Claude Code plugin manifest.
 
 ### Setup
 
@@ -27,7 +31,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip   # macOS Python 3.9's bundled pip is too old for editable installs
 pip install -e ".[dev]"
-pytest                                # 2 passed
+pytest                                # 55 passed
 organize                              # Would organize: <current folder>
 ```
 
@@ -35,6 +39,8 @@ organize                              # Would organize: <current folder>
 
 **2026-11-20**
 
+- Slice 3: safety checks in `safety.py`. Beyond design §3/§5, also rejects a file listed twice, a `new_name` that is a path or hidden, and sources that aren't directly in the source folder.
+- Slice 2: plan model and parser in `plan.py`.
 - Added this doc.
 - Command changed to `organize [path]`, which defaults to the current folder.
 - Scaffold: package, `organize` stub, 2 CLI tests (passing). pip needed an upgrade to install.
@@ -44,8 +50,8 @@ organize                              # Would organize: <current folder>
 Build in thin slices. Each slice ends with code that runs, has passing tests and is committed. The core comes first because both front ends depend on it.
 
 1. ~~**Scaffold.**~~ Done. See Current state.
-2. **Plan model.** A dataclass for one action that matches the JSON in design §2, plus code to parse and validate the model's output.
-3. **Safety checks** (design §3, §5):
+2. ~~**Plan model.** A dataclass for one action that matches the JSON in design §2, plus code to parse and validate the model's output.~~ Done.
+3. ~~**Safety checks** (design §3, §5):~~ Done.
    - every source is inside the source folder
    - every destination is inside the destination root
    - hidden files, partial downloads and symlinks are skipped
