@@ -12,7 +12,7 @@ tags: [design-doc, file-manager, python, cli, llm, claude-code, plugin]
 
 ## 1. What it does
 
-- Sorts the top level of one folder (default `~/Downloads`) into the user's `NN_` tree.
+- Sorts the top level of one folder (default: the current folder, so `cd` into a folder and run `organize`) into the user's `NN_` tree.
 - Decides from the filename first and reads the content only when the name isn't enough.
 - Moves files it is sure about. Asks about the rest.
 - Renames files to `YYYY-MM-DD_description.ext`.
@@ -36,7 +36,7 @@ flowchart LR
 |---|---|
 | Core (Python, no AI) | Scan, safety checks, move, Trash, log, undo |
 | Claude Code plugin | `/file-manager:organize [path]`. Uses the Claude plan; no API key. |
-| Standalone command | `organize run [path]`. Uses the user's own API key or a local model. |
+| Standalone command | `organize [path]`. Uses the user's own API key or a local model. |
 
 Both front ends share one prompt, and the model must return this for each file:
 
@@ -62,7 +62,7 @@ Kept in `~/.config/file-manager/` with `rules.md` and the logs, outside the repo
 | Setting | Default |
 |---|---|
 | `destination_root` | asked on first run |
-| `default_source` | `~/Downloads` |
+| `default_source` | the current folder |
 | `rename` | on |
 | `auto_move` | on (off = ask about every file) |
 | `trash_patterns` | `*.dmg`, `*.pkg` |
@@ -91,3 +91,4 @@ Kept in `~/.config/file-manager/` with `rules.md` and the logs, outside the repo
 | 2026-11-19 | Made public-ready: settings file, user data outside the repo, moves done by checked code, undo |
 | 2026-11-19 | Made model-independent: shared core, Claude plugin and standalone command |
 | 2026-11-19 | Doc cut down to essentials |
+| 2026-11-20 | Command is `organize [path]`; with no path it sorts the current folder |

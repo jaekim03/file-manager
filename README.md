@@ -9,7 +9,7 @@ Sorts the loose files in a folder into a numbered `NN_Category` folder tree (`00
 | You use | Run | Model access |
 |---|---|---|
 | Claude Code | `/file-manager:organize [path]` | Your Claude plan; no API key |
-| Anything else | `organize run [path]` | Your own API key, or a local model |
+| Anything else | `organize [path]` | Your own API key, or a local model |
 
 Both take `--dry-run` (show the plan, change nothing) and `--undo` (reverse the last run).
 

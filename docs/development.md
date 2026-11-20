@@ -4,24 +4,45 @@ How the repo is set up, what to build next, and how to write tests. For what the
 
 ## Current state
 
-The repo has a design and nothing else. There is no code yet.
+Slice 1 (scaffold) is done. The package installs, `organize` runs, and the tests pass. Nothing is sorted yet: `organize` only prints the folder it would sort.
 
 | File | Contents |
 |---|---|
 | `README.md` | Planned use, safety, privacy |
-| `docs/design.md` | v0 design, not built |
+| `docs/design.md` | v0 design |
 | `docs/development.md` | This file |
-| `pyproject.toml` | Name `file-manager` 0.1.0, Python >= 3.9, no dependencies. No build backend, entry points or dev tools. |
-| `.gitignore` | Python and macOS ignores |
+| `pyproject.toml` | Name `file-manager` 0.1.0, Python >= 3.9, no runtime dependencies. setuptools build, `dev` extra with `pytest`, `organize` command, pytest reads `tests/`. |
+| `src/file_manager/__init__.py` | Package version |
+| `src/file_manager/cli.py` | `organize [path]`: targets the given path, or the current folder if none, and prints `Would organize: <folder>` |
+| `tests/test_cli.py` | `test_no_argument_targets_current_folder`, `test_argument_targets_given_folder` |
+| `.gitignore` | Python and macOS ignores (includes `.venv/`) |
 | `LICENSE` | MIT |
 
-**Not set up yet:** the package source, tests, test runner, CI, the `organize` command and the Claude Code plugin manifest.
+**Not set up yet:** the safety checks, moving files, Trash, logging, undo, models, settings, CI and the Claude Code plugin manifest.
+
+### Setup
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip   # macOS Python 3.9's bundled pip is too old for editable installs
+pip install -e ".[dev]"
+pytest                                # 2 passed
+organize                              # Would organize: <current folder>
+```
+
+## What we did
+
+**2026-11-20**
+- Added this doc.
+- Command changed to `organize [path]`, which defaults to the current folder.
+- Scaffold: package, `organize` stub, 2 CLI tests (passing). pip needed an upgrade to install.
 
 ## Next steps
 
 Build in thin slices. Each slice ends with code that runs, has passing tests and is committed. The core comes first because both front ends depend on it.
 
-1. **Scaffold.** Add the `src/file_manager/` package and a `tests/` folder. Add `[build-system]` and a `dev` extra with `pytest` to `pyproject.toml`, then run `pip install -e ".[dev]"` and confirm `pytest` runs.
+1. ~~**Scaffold.**~~ Done. See Current state.
 2. **Plan model.** A dataclass for one action that matches the JSON in design §2, plus code to parse and validate the model's output.
 3. **Safety checks** (design §3, §5):
    - every source is inside the source folder
@@ -31,7 +52,7 @@ Build in thin slices. Each slice ends with code that runs, has passing tests and
 4. **Executor.** Move files without ever overwriting: add `_2` when a different file has the same name, and leave the source in place when an identical file is already there. Send `trash_patterns` matches to the Trash and write a JSON log of the run.
 5. **Undo.** Reverse the last run from its log.
 6. **Scanner and test fixtures.** List the files in the source folder. Add the fake model and the script that builds a fake folder to sort (design §6).
-7. **Standalone CLI.** `organize run [path]` with `--dry-run` and `--undo`, plus settings in `~/.config/file-manager/`.
+7. **Standalone CLI.** `organize [path]` with `--dry-run` and `--undo`, plus settings in `~/.config/file-manager/`.
 8. **Claude Code plugin.** `/file-manager:organize [path]`, using the shared prompt.
 9. **Real model providers.** API key and local model.
 
