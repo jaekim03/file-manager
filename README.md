@@ -2,7 +2,7 @@
 
 Sorts the loose files in a folder into a numbered `NN_Category` folder tree (`00_Personal`, `01_School`, `02_Projects`, …). An AI model decides where each file goes; plain Python does the moving.
 
-> **Status: in development.** Nothing here is usable yet. See [docs/design.md](docs/design.md) for the design.
+> **Status: in development.** Nothing here is usable yet. See [docs/design.md](docs/design.md) for the design and [docs/development.md](docs/development.md) for setup, next steps and testing.
 
 ## Planned use
 
